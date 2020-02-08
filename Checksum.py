@@ -1,4 +1,5 @@
 #calculate checksum
+from struct import *
 
 def calculateCheckSum(dataString):
     dataPacketStr = dataString.split(',')
@@ -8,18 +9,20 @@ def calculateCheckSum(dataString):
         checkSumTotal = int(dataPacketStr[loop - 1], 16) + checkSumTotal;
         loop = loop - 1;
     checkSumTotal = checkSumTotal % 256
-    print(hex(checkSumTotal))
+    #print(hex(checkSumTotal))
     return hex(checkSumTotal)
 
-def sendDataPacket(controlBit,dataLength,Data):
+def sendDataPacket(controlBit, Data):
     initialDataPacket="0x68,0x42,0x30,0x30,0x30,0x16,0x09,0x68";
+    dataLength = "0x%0.2X,0x00" % (len(Data.replace("0x","").replace(",",""))/2)
+    #print("dataLenth:"+dataLength)
     calulateCheckSumString=initialDataPacket+","+controlBit+","+dataLength+","+Data;
     checkSumVal=calculateCheckSum(calulateCheckSumString);
     finalDataPacket=calulateCheckSumString+","+str(checkSumVal)+",0x16"
-    return finalDataPacket
+    return finalDataPacket.replace("0x","").replace(",","")
 
 
-dataPacket=sendDataPacket("0x04","0x03,0x00","0x04,0xff")
+dataPacket=sendDataPacket("0x04","0x04,0xff")
 print(dataPacket)
 
 
