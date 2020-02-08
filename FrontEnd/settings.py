@@ -35,7 +35,7 @@ else:
 RESOLUTION = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 # Threshold for drunkenness
-drunkThreshold = 42
+drunkThreshold = 0.4
 
 # Timeout after getting the BAC input for the start screen to appear again (in milliseconds)
-timeout = 5000
+timeout = 30000

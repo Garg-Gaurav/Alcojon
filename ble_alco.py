@@ -29,6 +29,9 @@ def ReadRequest(requestStr):
         return "Measurement Result Completion"
     elif(requestStr[16:26]=="8104000390"):
         result=FetchResult(requestStr)
+	file=open("results.txt","w")
+	file.write(str(result))
+	file.close()
         return bcolors.OKGREEN+"BAC Value is: "+str(result)+" %"+bcolors.ENDC
 
 def FetchResult(responseStr):

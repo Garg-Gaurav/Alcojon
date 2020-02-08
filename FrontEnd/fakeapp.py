@@ -1,7 +1,17 @@
 import pygame
 import os
 import datetime
+import subprocess
+from gpiozero import Button
 from settings import *
+
+
+def onButtonPress():
+    global currentGUIState
+    if currentGUIState == GUIState.startScreen:
+    	currentGUIState = GUIState.processing
+    	os.system('sudo python ../ble_alco.py')
+
 
 FPS = 60
 
@@ -9,6 +19,10 @@ FPS = 60
 pygame.init()
 # Clock for assigning a certain fps (might not be necessary)
 clock = pygame.time.Clock()
+
+# Button for activating breath analysing
+button = Button(21)
+button.when_pressed = onButtonPress
 
 # Create a display surface
 screen = pygame.display.set_mode(RESOLUTION)
@@ -20,28 +34,34 @@ intoxication = 0  # The level of intoxication
 
 timeoutStartTime = 0  # At what time moment did the result appear
 
+# If the previous program closed unexpectedly, remove results file just in case
+try:
+    os.remove("results.txt")
+except FileNotFoundError:
+    pass
+
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             break
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE and currentGUIState == GUIState.startScreen:
-                currentGUIState = GUIState.processing
 
     # If we are waiting for a response from the breath analyser
     if currentGUIState == GUIState.processing:
         try:
-            with open("results.txt") as resultsfile:
-                intoxication = int(resultsfile.readline().strip("\n"))
+            with open("results.txt", "r") as resultsfile:
+                intoxication = float(resultsfile.readline().strip("\n"))
+                print("HERE!!!")
                 currentGUIState = GUIState.showingResult
                 timeoutStartTime = datetime.datetime.now()
                 drunk = True if intoxication > drunkThreshold else False
                 os.remove("results.txt")
         except FileNotFoundError:
+            print("PROBLEMA 1")
             pass
         except ValueError:
+            print("PROBLEMA 2")
             pass
     elif currentGUIState == GUIState.showingResult \
             and datetimeToMilliseconds(datetime.datetime.now() - timeoutStartTime) > timeout:
