@@ -3,6 +3,37 @@ import threading
 import binascii
 import time
 from struct import *
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def ReadRequest(requestStr):
+    if(requestStr[16:28]=="810300019000"):
+        return "Data Response"
+    elif(requestStr[16:28]=="810300029001"):
+        return "Start Blowing"
+    elif(requestStr[16:28]=="810300029002"):
+        return "finish blowing"
+    elif(requestStr[16:28]=="810300029003"):
+        return "Blowing Discontinue"
+    elif(requestStr[16:28]=="810300029004"):
+        return "Refuse Blowing"
+    elif(requestStr[16:28]=="810300029005"):
+        return "Measurement Result Completion"
+    elif(requestStr[16:26]=="8104000390"):
+        result=FetchResult(requestStr)
+        return bcolors.OKGREEN+"BAC Value is: "+str(result)+" %"+bcolors.ENDC
+
+def FetchResult(responseStr):
+    return float(int(responseStr[28:30],16)*256+int(responseStr[26:28],16))/100
+
  
 class NotificationDelegate(DefaultDelegate):
  
@@ -12,6 +43,7 @@ class NotificationDelegate(DefaultDelegate):
  
     def handleNotification(self, cHandle, data):
         print 'Notification:\nConnection:'+str(self.number)+'\nHandler:'+str(cHandle)+'\nMsg:'+binascii.hexlify(data)
+        print ReadRequest(binascii.hexlify(data))
  
 bt_addrs = []
 connections = []
@@ -81,11 +113,12 @@ while True:
                                     p.waitForNotifications(1.0)
                                     #Measure
                                     c.write(binascii.unhexlify(sendDataPacket("0x01","0x02,0x90")))
-                                    while p.waitForNotifications(10.0):
+                                    while p.waitForNotifications(30.0):
                                         continue
                                     #Disconncet
                                     c.write(binascii.unhexlify(sendDataPacket("0x04","0x04,0xff,0x00")))
                                     p.waitForNotifications(1.0)
+                                    exit()
                         except Exception as e:
                             print e
                     p.disconnect();

@@ -18,10 +18,6 @@ def ReadRequest(requestStr):
     elif(requestStr[16:26]=="8104000390"):
         result=FetchResult(requestStr)
         return "BAC Value is: "+str(result)+" %"
-    else:
-        return requestStr[28:30]
-
-
 
 def FetchResult(responseStr):
     return (int(responseStr[28:30])*256+int(responseStr[26:28]))/100
