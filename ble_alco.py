@@ -55,12 +55,20 @@ while True:
                                 #print "        UUID:", c.uuid
                                 if c.uuid == "0000ffe1-0000-1000-8000-00805f9b34fb":
                                     print "Alco char found!"
-                                    command_connect = "684230303016096804030004ff01cc16"
-                                    command_disconnect = "684230303016096804030004ff00cb16"
-                                    command_measure = "684230303016096801020002905616"
-                                    command_read = "684230303016096801020003905716"
+                                    print "Read: "+ str(c.read())
+                                    command_addr = "684230303002186801020002ffc016"
+                                    command_connect = "684230303002186804030004ff01c716"
+                                    command_disconnect = "684230303002186804030004ff00c616"
+                                    command_status = "684230303002186801020001905016"
+                                    command_measure = "684230303002186801020002905116"
+                                    command_read = "684230303002186801020003905216"
                                     command_mode = "684230303016096804030003ff01cb16"
-                                    c.write(binascii.unhexlify(command_connect))
+                                    command_readtime = "684230303002186801020001ffbf16"
+                                    #c.write(binascii.unhexlify(command_measure))
+                                    #p.waitForNotifications(1.0)
+                                    #raw_input("Press Enter to continue...")
+                                    c.write(binascii.unhexlify(command_read))
+                                    p.waitForNotifications(1.0)
                         except Exception as e:
                             print e
                     p.disconnect();
