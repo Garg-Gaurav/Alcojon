@@ -4,6 +4,8 @@ import binascii
 import time
 from struct import *
 
+script_done = False
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -32,6 +34,8 @@ def ReadRequest(requestStr):
 	file=open("results.txt","w")
 	file.write(str(result))
 	file.close()
+        script_done = True
+        exit()
         return bcolors.OKGREEN+"BAC Value is: "+str(result)+" %"+bcolors.ENDC
 
 def FetchResult(responseStr):
@@ -117,7 +121,9 @@ while True:
                                     #Measure
                                     c.write(binascii.unhexlify(sendDataPacket("0x01","0x02,0x90")))
                                     while p.waitForNotifications(30.0):
-                                        continue
+                                        if not script_done:
+                                            continue
+                                        print bcolors.FAIL+"script done"+bcolors.ENDC
                                     #Disconncet
                                     c.write(binascii.unhexlify(sendDataPacket("0x04","0x04,0xff,0x00")))
                                     p.waitForNotifications(1.0)
