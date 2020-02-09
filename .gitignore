@@ -1,0 +1,4 @@
+results.txt
+*.swp
+*.pyc
+FrontEnd/__pycache__/*
