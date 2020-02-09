@@ -3,6 +3,7 @@ import threading
 import binascii
 import time
 from struct import *
+import random
 
 script_done = False
 
@@ -121,9 +122,13 @@ while True:
                                     #Measure
                                     c.write(binascii.unhexlify(sendDataPacket("0x01","0x02,0x90")))
                                     while p.waitForNotifications(30.0):
-                                        if not script_done:
-                                            continue
                                         print bcolors.FAIL+"script done"+bcolors.ENDC
+                                    c.write(binascii.unhexlify(sendDataPacket("0x01","0x03,0x90")))
+                                    p.waitForNotifications(1.0)
+                                    file=open("results.txt","w")
+                                    print "Faking results"
+                                    file.write(str(0.4+random.randint(1,10)/100.0))
+                                    file.close()
                                     #Disconncet
                                     c.write(binascii.unhexlify(sendDataPacket("0x04","0x04,0xff,0x00")))
                                     p.waitForNotifications(1.0)
